@@ -58,5 +58,24 @@ namespace CodeChallenge.Controllers
 
             return Ok(newEmployee);
         }
+
+        [HttpGet("{id}/reportingStructure", Name="getEmployeeReportingStructure")]
+        public IActionResult GetEmployeeReportingStructure(String id)
+        {
+            _logger.LogDebug($"Recieved employee update request for '{id}'");
+
+            var existingEmployee = _employeeService.GetById(id);
+            if (existingEmployee == null)
+                return NotFound();
+
+            int numReports = _employeeService.GetNumberOfReports(existingEmployee);
+
+            return Ok(new ReportingStructure()
+            {
+                Employee = existingEmployee,
+                NumberOfReports = numReports
+            });
+
+        }        
     }
 }

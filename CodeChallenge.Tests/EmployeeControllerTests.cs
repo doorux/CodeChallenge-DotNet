@@ -33,7 +33,7 @@ namespace CodeCodeChallenge.Tests.Integration
             _httpClient.Dispose();
             _testServer.Dispose();
         }
-
+        #region OriginalTests
         [TestMethod]
         public void CreateEmployee_Returns_Created()
         {
@@ -132,5 +132,72 @@ namespace CodeCodeChallenge.Tests.Integration
             // Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         }
+        #endregion
+
+        #region ReportingStructure Tests
+
+        [TestMethod]
+        public void GetReportingStructure_Returns_CorrectCount_With_Reports()
+        {
+            // Arrange
+            var employeeId = "16a596ae-edd3-4847-99fe-c4518e82c86f";
+            var expectedFirstName = "John";
+            var expectedLastName = "Lennon";
+            int expectedNumReports = 4;
+
+            // Execute
+            var getRequestTask = _httpClient.GetAsync($"api/employee/{employeeId}/reportingStructure");
+            var response = getRequestTask.Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            var reportingStructure = response.DeserializeContent<ReportingStructure>();
+            var employee = reportingStructure.Employee;
+            Assert.AreEqual(expectedFirstName, employee.FirstName);
+            Assert.AreEqual(expectedLastName, employee.LastName);
+
+            var numReports = reportingStructure.NumberOfReports;
+            Assert.AreEqual(expectedNumReports, numReports);
+        }
+
+        [TestMethod]
+        public void GetReportingStructure_Returns_CorrectCount_No_Reports()
+        {
+            // Arrange
+            var employeeId = "c0c2293d-16bd-4603-8e08-638a9d18b22c";
+            var expectedFirstName = "George";
+            var expectedLastName = "Harrison";
+            int expectedNumReports = 0;
+
+            // Execute
+            var getRequestTask = _httpClient.GetAsync($"api/employee/{employeeId}/reportingStructure");
+            var response = getRequestTask.Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            var reportingStructure = response.DeserializeContent<ReportingStructure>();
+            var employee = reportingStructure.Employee;
+            Assert.AreEqual(expectedFirstName, employee.FirstName);
+            Assert.AreEqual(expectedLastName, employee.LastName);
+
+            var numReports = reportingStructure.NumberOfReports;
+            Assert.AreEqual(expectedNumReports, numReports);
+        }
+
+        [TestMethod]
+        public void GetReportingStructure_Returns_Error_For_Invalid_Employee()
+        {
+            // Arrange
+            var employeeId = "fake_employee";
+
+            // Execute
+            var getRequestTask = _httpClient.GetAsync($"api/employee/{employeeId}/reportingStructure");
+            var response = getRequestTask.Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        #endregion
     }
 }

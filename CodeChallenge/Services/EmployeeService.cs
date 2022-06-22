@@ -59,5 +59,15 @@ namespace CodeChallenge.Services
 
             return newEmployee;
         }
+
+        public int GetNumberOfReports(Employee employee)
+        {
+            var employeeDict = new Dictionary<string, Employee>(); //dict is <EmployeeId, Employee>
+
+            var reportsCount = _employeeRepository.GetCountAllReports(employee);
+
+            return reportsCount;
+        }
+
     }
 }
