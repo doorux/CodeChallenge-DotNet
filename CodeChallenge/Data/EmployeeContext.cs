@@ -15,5 +15,16 @@ namespace CodeChallenge.Data
         }
 
         public DbSet<Employee> Employees { get; set; }
+
+        public DbSet<Compensation> Compensation { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //Define employee navigation for compensation
+            modelBuilder.Entity<Compensation>()
+                .HasKey(c => new { c.EmployeeID });
+        }
+
     }
+
 }
